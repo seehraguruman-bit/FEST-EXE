@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="FEST.EXE festival management. Organise artists, stages and performance times in one workspace.">
+  <title>FEST.EXE | Festival management</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="workspace">
+    <header class="site-header">
+      <a class="logo" href="index.html"><span class="logo-mark" aria-hidden="true">&#9638;</span>FEST<span>.EXE</span></a>
+      <nav class="main-nav" aria-label="Management sections">
+        <button class="tab-button active" data-panel="performances" aria-pressed="true">Schedule</button>
+        <button class="tab-button" data-panel="artists" aria-pressed="false">Artists</button>
+        <button class="tab-button" data-panel="stages" aria-pressed="false">Stages</button>
+      </nav>
+      <span class="workspace-label">Festival workspace</span>
+    </header>
+    <main id="main">
+      <section class="page-toolbar" aria-labelledby="workspace-title">
+        <div class="toolbar-top">
+          <div><p class="eyebrow">FESTIVAL MANAGEMENT</p><h1 id="workspace-title">Schedule</h1></div>
+          <button class="button" id="add-performance"><span aria-hidden="true">+</span> Add performance</button>
+        </div>
+        <div class="toolbar-bottom">
+          <p id="workspace-description">Plan every performance. Keep every stage in sync.</p>
+          <div class="stats" aria-label="Festival totals"><span><b id="performance-count">0</b> performances</span><span><b id="artist-count">0</b> artists</span><span><b id="stage-count">0</b> stages</span></div>
+        </div>
+      </section>
+    <!-- Ordinary HTML forms. JavaScript shows them and reads their values. -->
+    <section class="editor" id="booking-editor" aria-labelledby="booking-title" hidden>
+      <div class="section-heading"><div><p class="eyebrow">PERFORMANCE DETAILS</p><h2 id="booking-title">Add performance</h2></div><button type="button" class="button button-small button-outline" id="close-booking">Close</button></div>
+      <form id="booking-form">
+        <div class="form-row"><label class="field" for="booking-artist">Artist<select id="booking-artist" required></select></label></div>
+        <div class="new-artist-fields" id="new-artist-fields" hidden>
+          <p class="help-text">Enter the artist details below. The artist and performance will be saved together.</p>
+          <div class="form-row"><label class="field" for="new-artist-name">Artist name<input id="new-artist-name" maxlength="60"></label><label class="field" for="new-artist-genre">Genre<input id="new-artist-genre" maxlength="35" placeholder="e.g. Indie rock"></label><label class="field" for="new-artist-email">Contact email (optional)<input id="new-artist-email" type="email" maxlength="100"></label></div>
+          <fieldset id="new-artist-equipment"><legend>Required equipment</legend><div class="checkboxes"><label><input type="checkbox" value="Microphone">Microphone</label><label><input type="checkbox" value="Drum kit">Drum kit</label><label><input type="checkbox" value="Keyboard">Keyboard</label><label><input type="checkbox" value="DJ console">DJ console</label><label><input type="checkbox" value="LED screen">LED screen</label></div></fieldset>
+        </div>
+        <p class="help-text" id="artist-requirements"></p>
+        <div class="form-row"><label class="field" for="booking-day">Festival day<select id="booking-day"><option value="1">Day 1</option><option value="2">Day 2</option><option value="3">Day 3</option></select></label><label class="field" for="booking-start">Start time<input id="booking-start" type="time" required></label><label class="field" for="booking-end">End time<input id="booking-end" type="time" required></label></div>
+        <div class="form-row"><label class="field" for="booking-stage">Stage<select id="booking-stage" required></select></label></div>
+        <div class="availability" id="booking-availability" role="status" aria-live="polite"></div>
+        <p class="help-text">Each performance must finish on the same day. Back-to-back sets are allowed.</p>
+        <p class="error" id="booking-error" role="alert" hidden></p>
+        <div class="form-actions"><button class="button" type="submit" id="save-performance">Save performance</button><button class="button button-outline" type="button" id="cancel-booking">Cancel</button></div>
+      </form>
+    </section>
+
+
+      <section class="panel" id="performances-panel">
+        <div class="section-heading">
+          <div><h2>Performance schedule</h2><p class="section-description">Select a set to view or edit its booking.</p></div>
+          <div class="view-toggle" aria-label="Schedule view"><button class="view-button active" data-view="timetable" aria-pressed="true">Timetable</button><button class="view-button" data-view="list" aria-pressed="false">List</button></div>
+        </div>
+        <div class="schedule-toolbar">
+          <div class="schedule-filters">
+            <label class="filter-label" for="day-filter">Day<select id="day-filter"><option value="">All days</option><option value="1" selected>Day 1</option><option value="2">Day 2</option><option value="3">Day 3</option></select></label>
+            <label class="filter-label" for="stage-filter">Stage<select id="stage-filter"><option value="">All stages</option></select></label>
+          </div>
+          <span class="schedule-key"><i aria-hidden="true"></i> Booked performance</span>
+        </div>
+        <div id="timetable-view"><div id="timetable"></div><p class="timeline-help">Select a set to edit. Scroll horizontally to see the full timeline.</p></div>
+        <div class="table-wrap" id="list-view" hidden><table><caption class="sr-only">Festival performance bookings</caption><thead><tr><th>Day &amp; time</th><th>Artist</th><th>Stage</th><th>Actions</th></tr></thead><tbody id="schedule-list"></tbody></table></div>
+        <p class="table-note" id="schedule-list-count" aria-live="polite"></p>
+      </section>
+    <section class="panel" id="artists-panel" hidden>
+      <div class="section-heading"><div><h2>Artists</h2><p class="section-description">Artists are created through Add performance. Update their details here.</p></div></div>
+      <form class="editor" id="artist-form" hidden>
+        <h3>Edit artist</h3><p class="help-text">Changes apply to all of this artist's performances.</p>
+        <div class="form-row"><label class="field" for="artist-name">Artist name<input id="artist-name" maxlength="60" required></label><label class="field" for="artist-genre">Genre<input id="artist-genre" maxlength="35" required></label><label class="field" for="artist-email">Contact email (optional)<input id="artist-email" type="email" maxlength="100"></label></div>
+        <fieldset id="artist-equipment"><legend>Required equipment</legend><div class="checkboxes"><label><input type="checkbox" value="Microphone">Microphone</label><label><input type="checkbox" value="Drum kit">Drum kit</label><label><input type="checkbox" value="Keyboard">Keyboard</label><label><input type="checkbox" value="DJ console">DJ console</label><label><input type="checkbox" value="LED screen">LED screen</label></div></fieldset>
+        <p class="error" id="artist-error" role="alert" hidden></p><div class="form-actions"><button type="submit" class="button">Save artist</button><button type="button" class="button button-outline" id="cancel-artist">Cancel</button></div>
+      </form>
+      <label class="field search-field" for="artist-search">Search artists<input type="search" id="artist-search" placeholder="Name or genre"></label>
+      <div class="table-wrap"><table><caption class="sr-only">Artist details and technical requirements</caption><thead><tr><th>Artist</th><th>Genre</th><th>Required equipment</th><th>Actions</th></tr></thead><tbody id="artist-list"></tbody></table></div>
+    </section>
+
+    <section class="panel" id="stages-panel" hidden>
+      <div class="section-heading"><div><h2>Stages</h2><p class="section-description">Manage capacity and available equipment.</p></div><button class="button button-small" id="add-stage">+ Add stage</button></div>
+      <form class="editor" id="stage-form" hidden>
+        <h3 id="stage-title">Add stage</h3><p class="help-text">Available equipment is checked when a performance is booked.</p>
+        <div class="form-row"><label class="field" for="stage-name">Stage name<input id="stage-name" maxlength="60" required></label><label class="field" for="stage-capacity">Audience capacity<input id="stage-capacity" type="number" min="1" max="1000000" step="1" required></label></div>
+        <fieldset id="stage-equipment"><legend>Available equipment</legend><div class="checkboxes"><label><input type="checkbox" value="Microphone">Microphone</label><label><input type="checkbox" value="Drum kit">Drum kit</label><label><input type="checkbox" value="Keyboard">Keyboard</label><label><input type="checkbox" value="DJ console">DJ console</label><label><input type="checkbox" value="LED screen">LED screen</label></div></fieldset>
+        <p class="error" id="stage-error" role="alert" hidden></p><div class="form-actions"><button type="submit" class="button">Save stage</button><button type="button" class="button button-outline" id="cancel-stage">Cancel</button></div>
+      </form>
+      <div class="table-wrap"><table><caption class="sr-only">Festival stages and available equipment</caption><thead><tr><th>Stage</th><th>Capacity</th><th>Available equipment</th><th>Actions</th></tr></thead><tbody id="stage-list"></tbody></table></div>
+    </section>
+
+    </main>
+    <footer class="site-footer"><span>FEST.EXE <span class="footer-divider">/</span> Music festival management</span><span>Saved in this browser only</span></footer>
+  </div>
+  <p class="notice" id="notice" role="status" hidden></p>
+</body>
+</html>
