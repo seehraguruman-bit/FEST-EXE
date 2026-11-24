@@ -27,6 +27,9 @@ Actions**. After pushing to `main`, the site is deployed at:
 
 https://seehraguruman-bit.github.io/FEST-EXE/
 
+If a deployment run started before Pages was enabled, rerun that failed run from
+the repository's **Actions** tab, or push a new commit to `main`.
+
 ## Files
 
 - index.html: the complete management interface and its three HTML forms.
